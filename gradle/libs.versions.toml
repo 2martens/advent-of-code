@@ -1,5 +1,6 @@
 [versions]
 spring-boot = "3.2.0"
+spring-shell = "3.1.6"
 spring-doc = "2.1.0"
 spring-cloud = "2022.0.4"
 spring-grpc = "2.14.0.RELEASE"
@@ -36,6 +37,7 @@ spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test
 spring-boot-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-boot-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
 spring-boot-config = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
+spring-boot-shell = { module = "org.springframework.shell:spring-shell-starter", version.ref = "spring-shell" }
 spring-cloud = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "spring-cloud" }
 spring-cloud-starter = { module = "org.springframework.cloud:spring-cloud-starter" }
 spring-cloud-starter-config = { module = "org.springframework.cloud:spring-cloud-starter-config" }
