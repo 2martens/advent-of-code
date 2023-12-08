@@ -1,0 +1,7 @@
+spring:
+  main:
+    banner-mode: off
+  profiles:
+    default: dev
+  application:
+    name: adventofcode
