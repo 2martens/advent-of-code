@@ -8,11 +8,21 @@ import java.util.stream.Stream
 
 class SequencePredictorTest {
     @ParameterizedTest
-    @MethodSource(value = ["predictionSequences"])
+    @MethodSource(value = ["predictionNextSequences"])
     fun shouldCalculateNextItem(sequence: List<Int>, expectedValue: Int) {
         val predictor = SequencePredictor()
 
         val nextValue = predictor.predictNextValue(sequence)
+
+        Assertions.assertThat(nextValue).isEqualTo(expectedValue)
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = ["predictionPreviousSequences"])
+    fun shouldCalculatePreviousItem(sequence: List<Int>, expectedValue: Int) {
+        val predictor = SequencePredictor()
+
+        val nextValue = predictor.predictPreviousValue(sequence)
 
         Assertions.assertThat(nextValue).isEqualTo(expectedValue)
     }
@@ -29,11 +39,20 @@ class SequencePredictorTest {
 
     companion object {
         @JvmStatic
-        private fun predictionSequences(): Stream<Arguments> {
+        private fun predictionNextSequences(): Stream<Arguments> {
             return Stream.of(
                     Arguments.of(listOf(0, 3, 6, 9, 12, 15), 18),
                     Arguments.of(listOf(1, 3, 6, 10, 15, 21), 28),
                     Arguments.of(listOf(10, 13, 16, 21, 30, 45), 68),
+            )
+        }
+
+        @JvmStatic
+        private fun predictionPreviousSequences(): Stream<Arguments> {
+            return Stream.of(
+                    Arguments.of(listOf(0, 3, 6, 9, 12, 15), -3),
+                    Arguments.of(listOf(1, 3, 6, 10, 15, 21), 0),
+                    Arguments.of(listOf(10, 13, 16, 21, 30, 45), 5),
             )
         }
 
