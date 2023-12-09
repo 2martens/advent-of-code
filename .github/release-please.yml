@@ -2,6 +2,7 @@ handleGHRelease: true
 releaseType: simple
 bumpMinorPreMajor: true
 bumpPatchForMinorPreMajor: true
+draft: true
 changelogSections:
   - type: "feat",
     section: "Added",
