@@ -21,7 +21,7 @@ class GraphWalker {
         val anyNode = graph.randomNonLoopNode()
         if (anyNode != null) {
             colourNodes(anyNode, graph, loop)
-            val innerNodes = graph.rows.flatten().filter { it.colour == NodeColour.INSIDE }
+            val innerNodes = graph.nodes.filter { it.colour == NodeColour.INSIDE }
             return innerNodes.size
         } else {
             return 0
@@ -109,7 +109,8 @@ class GraphWalker {
 
             for (neighbour in neighbours) {
                 if (neighbour !in visitedNodes
-                        && neighbour.colour in listOf(NodeColour.UNKNOWN, NodeColour.BORDER)) {
+                        && neighbour.colour in listOf(NodeColour.UNKNOWN, NodeColour.BORDER)
+                        && !queue.contains(neighbour)) {
                     queue.add(neighbour)
                 }
             }
