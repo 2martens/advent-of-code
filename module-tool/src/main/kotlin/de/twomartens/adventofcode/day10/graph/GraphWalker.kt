@@ -34,14 +34,6 @@ class GraphWalker {
         return startNode
     }
 
-    private fun findNonLoopNode(graph: Graph): Node? {
-        return try {
-            graph.nodes.filter { it.colour != NodeColour.LOOP }.random()
-        } catch (e: NoSuchElementException) {
-            null
-        }
-    }
-
     private fun findLoop(startNode: Node, graph: Graph): Pair<Collection<Node>, Int> {
         val visitedNodes = mutableSetOf<Node>()
         var furthestDistance = 0
@@ -116,12 +108,6 @@ class GraphWalker {
             }
         }
         return visitedNodes
-    }
-
-    private fun findInnerNodes(graph: Graph, loop: Loop, outsideNodes: Collection<Node>): Collection<Node> {
-        return graph.rows.flatten().filter { node ->
-            node !in loop.nodes && node !in outsideNodes
-        }
     }
 
     private fun initializeQueue(startNode: Node): ArrayDeque<Pair<Node, Int>> {
