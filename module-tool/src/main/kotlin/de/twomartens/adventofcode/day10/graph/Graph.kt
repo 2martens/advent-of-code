@@ -12,6 +12,20 @@ data class Graph(val name: String, val rows: List<List<Node>>, val startPosition
         return name
     }
 
+    fun printGraphString(): String {
+        return rows.joinToString("\n") { row ->
+            row.joinToString("") {
+                when (it.colour) {
+                    NodeColour.INSIDE -> "1"
+                    NodeColour.BORDER -> "x"
+                    NodeColour.OUTSIDE -> "0"
+                    NodeColour.LOOP -> "L"
+                    NodeColour.UNKNOWN -> "?"
+                }
+            }
+        }
+    }
+
     fun randomNonLoopNode(): Node? {
         return try {
             nodes.filter { it.colour != NodeColour.LOOP }.random()
