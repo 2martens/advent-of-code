@@ -14,9 +14,9 @@ class Day10 {
         val lines = readLines()
         val graph = Graph.of("day10", lines)
         val walker = GraphWalker()
-        val farthestDistance = walker.findFarthestDistance(graph)
+        val furthestDistance = walker.findFurthestDistance(graph)
 
-        return farthestDistance.toString()
+        return furthestDistance.toString()
     }
 
     private fun readLines(): List<String> {

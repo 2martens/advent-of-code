@@ -12,7 +12,7 @@ class GraphWalkerTest {
     fun shouldFindFarthestDistance(graph: Graph, distance: Int) {
         val walker = GraphWalker()
 
-        val farthestDistance = walker.findFarthestDistance(graph)
+        val farthestDistance = walker.findFurthestDistance(graph)
 
         Assertions.assertThat(farthestDistance).isEqualTo(distance)
     }
