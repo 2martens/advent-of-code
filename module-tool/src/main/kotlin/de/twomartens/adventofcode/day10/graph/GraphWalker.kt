@@ -72,11 +72,11 @@ class GraphWalker {
         }
 
         var uncolouredNodes = graph.rows.flatten().filter { it.colour == NodeColour.UNKNOWN }
-        log.info("remaining uncoloured nodes: ${uncolouredNodes.size}")
+        log.debug("remaining uncoloured nodes: {}", uncolouredNodes.size)
         while (uncolouredNodes.isNotEmpty()) {
             colourNodes(uncolouredNodes.random(), graph, loop)
             uncolouredNodes = graph.rows.flatten().filter { it.colour == NodeColour.UNKNOWN }
-            log.info("remaining uncoloured nodes: ${uncolouredNodes.size}")
+            log.debug("remaining uncoloured nodes: {}", uncolouredNodes.size)
         }
     }
 
@@ -85,11 +85,13 @@ class GraphWalker {
             graph: Graph,
             loop: Loop
     ): MutableSet<Node> {
+        log.debug("Expand graph with startNode at position: {}", startNode.index)
         val visitedNodes = mutableSetOf<Node>()
         val queue = ArrayDeque<Node>()
         queue.add(startNode)
 
         while (queue.isNotEmpty()) {
+            log.debug("Current amount of entries in queue: {}", queue.size)
             val currentNode = queue.removeFirst()
             visitedNodes.add(currentNode)
 
