@@ -2,6 +2,7 @@ package de.twomartens.adventofcode.day10
 
 import de.twomartens.adventofcode.day10.graph.Graph
 import de.twomartens.adventofcode.day10.graph.GraphWalker
+import mu.KotlinLogging
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
 import java.nio.file.Files
@@ -25,6 +26,7 @@ class Day10 {
         val graph = Graph.of("day10", lines)
         val walker = GraphWalker()
         val numberOfContainedNodes = walker.findNumberOfContainedNodes(graph)
+        log.debug(graph.printGraphString())
 
         return numberOfContainedNodes.toString()
     }
@@ -36,5 +38,9 @@ class Day10 {
         }
 
         return Files.readAllLines(url.toURI().toPath())
+    }
+
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 }
