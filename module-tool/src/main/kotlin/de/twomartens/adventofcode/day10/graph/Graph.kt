@@ -1,12 +1,23 @@
 package de.twomartens.adventofcode.day10.graph
 
 import de.twomartens.adventofcode.day10.node.Node
+import de.twomartens.adventofcode.day10.node.NodeColour
 import de.twomartens.adventofcode.day10.node.NodeType
 
 data class Graph(val name: String, val rows: List<List<Node>>, val startPosition: Pair<Int, Int>) {
 
+    val nodes = rows.flatten()
+
     override fun toString(): String {
         return name
+    }
+
+    fun randomNonLoopNode(): Node? {
+        return try {
+            nodes.filter { it.colour != NodeColour.LOOP }.random()
+        } catch (e: NoSuchElementException) {
+            null
+        }
     }
 
     companion object {

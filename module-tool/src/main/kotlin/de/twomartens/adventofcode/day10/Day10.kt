@@ -19,6 +19,16 @@ class Day10 {
         return furthestDistance.toString()
     }
 
+    @ShellMethod(key = ["day-10-part-2"])
+    fun day10Part2(): String {
+        val lines = readLines()
+        val graph = Graph.of("day10", lines)
+        val walker = GraphWalker()
+        val numberOfContainedNodes = walker.findNumberOfContainedNodes(graph)
+
+        return numberOfContainedNodes.toString()
+    }
+
     private fun readLines(): List<String> {
         val url = Day10::class.java.classLoader.getResource("input/day-10.txt")
         if (url === null) {

@@ -1,24 +1,25 @@
 package de.twomartens.adventofcode.day10.node
 
 interface Node {
+    val index: Pair<Int, Int>
+    val colour: NodeColour
+
     fun isConnectedTo(otherNode: Node): Boolean
 
-    fun index(): Pair<Int, Int>
-
     fun northIndex(): Pair<Int, Int> {
-        return Pair(index().first - 1, index().second)
+        return Pair(index.first - 1, index.second)
     }
 
     fun eastIndex(): Pair<Int, Int> {
-        return Pair(index().first, index().second + 1)
+        return Pair(index.first, index.second + 1)
     }
 
     fun southIndex(): Pair<Int, Int> {
-        return Pair(index().first + 1, index().second)
+        return Pair(index.first + 1, index.second)
     }
 
     fun westIndex(): Pair<Int, Int> {
-        return Pair(index().first, index().second - 1)
+        return Pair(index.first, index.second - 1)
     }
 
     companion object {
