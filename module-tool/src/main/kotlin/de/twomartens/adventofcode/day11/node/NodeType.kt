@@ -2,8 +2,7 @@ package de.twomartens.adventofcode.day11.node
 
 enum class NodeType(val identifier: String) {
     EMPTY("."),
-    GALAXY("#"),
-    BORDER("B");
+    GALAXY("#");
 
     companion object {
         fun of(identifier: String): NodeType {

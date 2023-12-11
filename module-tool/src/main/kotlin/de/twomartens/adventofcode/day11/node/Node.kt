@@ -9,7 +9,6 @@ interface Node {
             val foundNode = when (nodeType) {
                 NodeType.EMPTY -> EmptySpaceNode(index)
                 NodeType.GALAXY -> GalaxyNode(index)
-                NodeType.BORDER -> BorderNode(index)
             }
 
             return foundNode
