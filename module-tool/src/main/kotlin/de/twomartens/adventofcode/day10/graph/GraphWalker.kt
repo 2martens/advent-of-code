@@ -6,26 +6,21 @@ import mu.KotlinLogging
 class GraphWalker {
     fun findFurthestDistance(graph: Graph): Int {
         val startNode = findStartNode(graph)
-        val (_, distance) = findLoop(startNode, graph)
+        val (_, _, distance) = findLoop(startNode, graph)
 
         return distance
     }
 
     fun findNumberOfContainedNodes(graph: Graph): Int {
         val startNode = findStartNode(graph)
-        val (visitedNodes, _) = findLoop(startNode, graph)
+        val (visitedNodes, newStartNode, _) = findLoop(startNode, graph)
         visitedNodes.filterIsInstance<AdjustableColourNode>()
                 .forEach { it.colour = NodeColour.LOOP }
-        val loopIndices = visitedNodes.map { it.index }
-        val loop = Loop(visitedNodes, loopIndices)
-        val anyNode = graph.randomNonLoopNode()
-        if (anyNode != null) {
-            colourNodes(anyNode, graph, loop)
-            val innerNodes = graph.nodes.filter { it.colour == NodeColour.INSIDE }
-            return innerNodes.size
-        } else {
-            return 0
-        }
+        graph.replaceNode(startNode.index, newStartNode)
+        colourNodes(graph)
+        log.debug { graph.printGraphString() }
+        val innerNodes = graph.nodes.filter { it.colour == NodeColour.INSIDE }
+        return innerNodes.size
     }
 
     private fun findStartNode(graph: Graph): Node {
@@ -34,7 +29,7 @@ class GraphWalker {
         return startNode
     }
 
-    private fun findLoop(startNode: Node, graph: Graph): Pair<Collection<Node>, Int> {
+    private fun findLoop(startNode: Node, graph: Graph): Triple<Collection<Node>, Node, Int> {
         val visitedNodes = mutableSetOf<Node>()
         var furthestDistance = 0
 
@@ -57,79 +52,44 @@ class GraphWalker {
             }
         }
 
-        return Pair(visitedNodes, furthestDistance)
+        val neighboursOfStart = visitedNodes.filter { it.isConnectedTo(startNode) && startNode.isConnectedTo(it) }
+        val realStartNodeType = findStartNodeType(startNode.index, neighboursOfStart)
+        val realStartNode = Node.of(realStartNodeType, startNode.index)
+        visitedNodes.remove(startNode)
+        visitedNodes.add(realStartNode)
+
+        return Triple(visitedNodes, realStartNode, furthestDistance)
     }
 
-    private fun colourNodes(startNode: Node, graph: Graph, loop: Loop) {
-        val visitedNodes = expandGraph(startNode, graph, loop)
-
-        if (visitedNodes.any { it is BorderNode }) {
-            visitedNodes.filterIsInstance<AdjustableColourNode>()
-                    .forEach { it.colour = NodeColour.OUTSIDE }
-        } else {
-            visitedNodes.filterIsInstance<AdjustableColourNode>()
-                    .forEach { it.colour = NodeColour.INSIDE }
-        }
-
-        var uncolouredNodes = graph.rows.flatten().filter { it.colour == NodeColour.UNKNOWN }
-        log.debug("remaining uncoloured nodes: {}", uncolouredNodes.size)
-        while (uncolouredNodes.isNotEmpty()) {
-            colourNodes(uncolouredNodes.random(), graph, loop)
-            uncolouredNodes = graph.rows.flatten().filter { it.colour == NodeColour.UNKNOWN }
-            log.debug("remaining uncoloured nodes: {}", uncolouredNodes.size)
-        }
-    }
-
-    private fun expandGraph(
-            startNode: Node,
-            graph: Graph,
-            loop: Loop
-    ): MutableSet<Node> {
-        log.debug("Expand graph with startNode at position: {}", startNode.index)
-        val visitedNodes = mutableSetOf<Node>()
-        val queue = ArrayDeque<Node>()
-        queue.add(startNode)
-
-        while (queue.isNotEmpty()) {
-            log.debug("Current amount of entries in queue: {}", queue.size)
-            val currentNode = queue.removeFirst()
-            visitedNodes.add(currentNode)
-
-            if (currentNode is BorderNode) {
+    private fun colourNodes(graph: Graph) {
+        val uncolouredNodes = graph.nodes.filter { it.colour == NodeColour.UNKNOWN }
+        val intersectionFinder = IntersectionFinder()
+        for (node in uncolouredNodes) {
+            if (node !is AdjustableColourNode) {
                 continue
             }
 
-            val neighbours = findNeighboursWithPipes(currentNode, graph, loop)
-
-            for (neighbour in neighbours) {
-                if (neighbour !in visitedNodes
-                        && neighbour.colour in listOf(NodeColour.UNKNOWN, NodeColour.BORDER)
-                        && !queue.contains(neighbour)) {
-                    queue.add(neighbour)
-                }
+            val nodesToBorder = mutableListOf<Node>(node)
+            var neighbour = node
+            do {
+                neighbour = findNode(graph, neighbour.westIndex())
+                nodesToBorder.add(neighbour)
+            } while (neighbour !is BorderNode)
+            val intersections = intersectionFinder.findNumberOfIntersections(nodesToBorder)
+            if (isOdd(intersections)) {
+                node.colour = NodeColour.INSIDE
+            } else {
+                node.colour = NodeColour.OUTSIDE
             }
         }
-        return visitedNodes
     }
+
+    private fun isOdd(intersections: Int) = intersections % 2 == 1
 
     private fun initializeQueue(startNode: Node): ArrayDeque<Pair<Node, Int>> {
         val queue = ArrayDeque<Pair<Node, Int>>()
         queue.add(startNode to 0)
         return queue
-    }
-
-    private fun findNeighboursWithPipes(
-            currentNode: Node,
-            graph: Graph,
-            loop: Loop
-    ): List<Node> {
-        val neighbours = listOf(
-                findNorthernNode(currentNode, graph, loop),
-                findEasternNode(currentNode, graph, loop),
-                findSouthernNode(currentNode, graph, loop),
-                findWesternNode(currentNode, graph, loop)
-        )
-        return neighbours
     }
 
     private fun findNeighbours(
@@ -147,110 +107,51 @@ class GraphWalker {
         return neighbours
     }
 
-    private fun findNorthernNode(currentNode: Node, graph: Graph, loop: Loop): Node {
-        val neighbourIndex = currentNode.northIndex()
-        var neighbour = findNode(graph, neighbourIndex)
-        val originalNeighbour = neighbour
-        if (isLoopNode(loop, neighbour.index)
-                && (neighbour is NorthWestNode || neighbour is NorthEastNode)) {
-            var nextNodeIndex = neighbour.northIndex()
-            var nextNeighbour = findNode(graph, nextNodeIndex)
-            while (nextNeighbour.isConnectedTo(neighbour)
-                    && neighbour.isConnectedTo(nextNeighbour)) {
-                neighbour = nextNeighbour
-                nextNodeIndex = neighbour.northIndex()
-                nextNeighbour = findNode(graph, nextNodeIndex)
-            }
-            neighbour = if (neighbour is SouthWestNode && originalNeighbour is NorthWestNode
-                    || neighbour is SouthEastNode && originalNeighbour is NorthEastNode) {
-                nextNeighbour
-            } else {
-                originalNeighbour
-            }
+    private fun findStartNodeType(startNodeIndex: Pair<Int, Int>, neighbours: Collection<Node>): NodeType {
+        if (neighbours.size != 2) {
+            throw IllegalArgumentException("Neighbours must have size 2")
         }
 
-        return neighbour
-    }
-
-    private fun findEasternNode(currentNode: Node, graph: Graph, loop: Loop): Node {
-        val neighbourIndex = currentNode.eastIndex()
-        var neighbour = findNode(graph, neighbourIndex)
-        val originalNeighbour = neighbour
-        if (isLoopNode(loop, neighbour.index)
-                && (neighbour is NorthEastNode || neighbour is SouthEastNode)) {
-            var nextNodeIndex = neighbour.eastIndex()
-            var nextNeighbour = findNode(graph, nextNodeIndex)
-            while (nextNeighbour.isConnectedTo(neighbour)
-                    && neighbour.isConnectedTo(nextNeighbour)) {
-                neighbour = nextNeighbour
-                nextNodeIndex = neighbour.eastIndex()
-                nextNeighbour = findNode(graph, nextNodeIndex)
-            }
-            neighbour = if (neighbour is NorthWestNode && originalNeighbour is NorthEastNode
-                    || neighbour is SouthWestNode && originalNeighbour is SouthEastNode) {
-                nextNeighbour
-            } else {
-                originalNeighbour
-            }
+        val firstNode = neighbours.first()
+        val firstNodeType = firstNode.nodeType
+        val secondNode = neighbours.last()
+        val secondNodeType = secondNode.nodeType
+        if (firstNodeType == secondNodeType) {
+            return firstNodeType
         }
 
-        return neighbour
-    }
-
-    private fun findSouthernNode(currentNode: Node, graph: Graph, loop: Loop): Node {
-        val neighbourIndex = currentNode.southIndex()
-        var neighbour = findNode(graph, neighbourIndex)
-        val originalNeighbour = neighbour
-        if (isLoopNode(loop, neighbour.index)
-                && (neighbour is SouthWestNode || neighbour is SouthEastNode)) {
-            var nextNodeIndex = neighbour.southIndex()
-            var nextNeighbour = findNode(graph, nextNodeIndex)
-            while (nextNeighbour.isConnectedTo(neighbour)
-                    && neighbour.isConnectedTo(nextNeighbour)) {
-                neighbour = nextNeighbour
-                nextNodeIndex = neighbour.southIndex()
-                nextNeighbour = findNode(graph, nextNodeIndex)
-            }
-            neighbour = if (neighbour is NorthWestNode && originalNeighbour is SouthWestNode
-                    || neighbour is NorthEastNode && originalNeighbour is SouthEastNode) {
-                nextNeighbour
-            } else {
-                originalNeighbour
-            }
+        if (firstNode.northIndex() == startNodeIndex && secondNode.southIndex() == startNodeIndex
+                || firstNode.southIndex() == startNodeIndex && secondNode.northIndex() == startNodeIndex) {
+            return NodeType.VERTICAL
         }
 
-        return neighbour
-    }
-
-    private fun findWesternNode(currentNode: Node, graph: Graph, loop: Loop): Node {
-        val neighbourIndex = currentNode.westIndex()
-        var neighbour = findNode(graph, neighbourIndex)
-        val originalNeighbour = neighbour
-        if (isLoopNode(loop, neighbour.index)
-                && (neighbour is NorthWestNode || neighbour is SouthWestNode)) {
-            var nextNodeIndex = neighbour.westIndex()
-            var nextNeighbour = findNode(graph, nextNodeIndex)
-            while (nextNeighbour.isConnectedTo(neighbour)
-                    && neighbour.isConnectedTo(nextNeighbour)) {
-                neighbour = nextNeighbour
-                nextNodeIndex = neighbour.westIndex()
-                nextNeighbour = findNode(graph, nextNodeIndex)
-            }
-            neighbour = if (neighbour is NorthEastNode && originalNeighbour is NorthWestNode
-                    || neighbour is SouthEastNode && originalNeighbour is SouthWestNode) {
-                nextNeighbour
-            } else {
-                originalNeighbour
-            }
+        if (firstNode.eastIndex() == startNodeIndex && secondNode.westIndex() == startNodeIndex
+                || firstNode.westIndex() == startNodeIndex && secondNode.eastIndex() == startNodeIndex) {
+            return NodeType.HORIZONTAL
         }
 
-        return neighbour
-    }
+        if (firstNode.northIndex() == startNodeIndex && secondNode.westIndex() == startNodeIndex
+                || firstNode.westIndex() == startNodeIndex && secondNode.northIndex() == startNodeIndex) {
+            return NodeType.SOUTH_EAST
+        }
 
-    private fun isLoopNode(
-            loop: Loop,
-            neighbourIndex: Pair<Int, Int>
-    ) = loop.indices.contains(neighbourIndex)
+        if (firstNode.southIndex() == startNodeIndex && secondNode.westIndex() == startNodeIndex
+                || firstNode.westIndex() == startNodeIndex && secondNode.southIndex() == startNodeIndex) {
+            return NodeType.NORTH_EAST
+        }
+
+        if (firstNode.northIndex() == startNodeIndex && secondNode.eastIndex() == startNodeIndex
+                || firstNode.eastIndex() == startNodeIndex && secondNode.northIndex() == startNodeIndex) {
+            return NodeType.SOUTH_WEST
+        }
+
+        if (firstNode.southIndex() == startNodeIndex && secondNode.eastIndex() == startNodeIndex
+                || firstNode.eastIndex() == startNodeIndex && secondNode.southIndex() == startNodeIndex) {
+            return NodeType.NORTH_WEST
+        }
+
+        throw IllegalArgumentException("Invalid combination of neighbours")
+    }
 
     private fun findNode(
             graph: Graph,

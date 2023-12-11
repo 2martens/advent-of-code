@@ -3,7 +3,8 @@ package de.twomartens.adventofcode.day10.node
 import kotlin.math.abs
 
 data class HorizontalNode(override val index: Pair<Int, Int>,
-                          override var colour: NodeColour = NodeColour.UNKNOWN) : AdjustableColourNode {
+                          override var colour: NodeColour = NodeColour.UNKNOWN,
+                          override val nodeType: NodeType = NodeType.HORIZONTAL) : AdjustableColourNode {
     override fun isConnectedTo(otherNode: Node): Boolean {
         return isHorizontal(otherNode)
     }

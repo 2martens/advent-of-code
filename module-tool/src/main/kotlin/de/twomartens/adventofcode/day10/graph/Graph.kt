@@ -4,7 +4,7 @@ import de.twomartens.adventofcode.day10.node.Node
 import de.twomartens.adventofcode.day10.node.NodeColour
 import de.twomartens.adventofcode.day10.node.NodeType
 
-data class Graph(val name: String, val rows: List<List<Node>>, val startPosition: Pair<Int, Int>) {
+data class Graph(val name: String, val rows: List<MutableList<Node>>, val startPosition: Pair<Int, Int>) {
 
     val nodes = rows.flatten()
 
@@ -13,7 +13,7 @@ data class Graph(val name: String, val rows: List<List<Node>>, val startPosition
     }
 
     fun printGraphString(): String {
-        return rows.joinToString("\n") { row ->
+        return name + "\n" + rows.joinToString("\n") { row ->
             row.joinToString("") {
                 when (it.colour) {
                     NodeColour.INSIDE -> "1"
@@ -26,12 +26,8 @@ data class Graph(val name: String, val rows: List<List<Node>>, val startPosition
         }
     }
 
-    fun randomNonLoopNode(): Node? {
-        return try {
-            nodes.filter { it.colour != NodeColour.LOOP }.random()
-        } catch (e: NoSuchElementException) {
-            null
-        }
+    fun replaceNode(index: Pair<Int, Int>, node: Node) {
+        rows[index.first][index.second] = node
     }
 
     companion object {
@@ -47,7 +43,7 @@ data class Graph(val name: String, val rows: List<List<Node>>, val startPosition
                         startPosition = index
                     }
                     Node.of(nodeType, index)
-                }
+                }.toMutableList()
             }
 
             return Graph(name, graph, startPosition)

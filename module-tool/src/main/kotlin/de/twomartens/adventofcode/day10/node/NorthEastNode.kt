@@ -1,7 +1,8 @@
 package de.twomartens.adventofcode.day10.node
 
 data class NorthEastNode(override val index: Pair<Int, Int>,
-                         override var colour: NodeColour = NodeColour.UNKNOWN) : AdjustableColourNode {
+                         override var colour: NodeColour = NodeColour.UNKNOWN,
+                         override val nodeType: NodeType = NodeType.NORTH_EAST) : AdjustableColourNode {
     override fun isConnectedTo(otherNode: Node): Boolean {
         return isNorth(otherNode) || isEast(otherNode)
     }

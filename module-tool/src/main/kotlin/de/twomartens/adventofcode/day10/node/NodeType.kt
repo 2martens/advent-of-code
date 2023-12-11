@@ -8,7 +8,8 @@ enum class NodeType(val identifier: String) {
     SOUTH_EAST("F"),
     HORIZONTAL("-"),
     VERTICAL("|"),
-    GROUND(".");
+    GROUND("."),
+    BORDER("B");
 
     companion object {
         fun of(identifier: String): NodeType {

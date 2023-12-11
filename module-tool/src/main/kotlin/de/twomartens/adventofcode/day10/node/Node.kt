@@ -3,6 +3,7 @@ package de.twomartens.adventofcode.day10.node
 interface Node {
     val index: Pair<Int, Int>
     val colour: NodeColour
+    val nodeType: NodeType
 
     fun isConnectedTo(otherNode: Node): Boolean
 
@@ -23,16 +24,17 @@ interface Node {
     }
 
     companion object {
-        fun of(nodeType: NodeType, index: Pair<Int, Int>): Node {
+        fun of(nodeType: NodeType, index: Pair<Int, Int>, colour: NodeColour = NodeColour.UNKNOWN): Node {
             val foundNode = when (nodeType) {
                 NodeType.START_NODE -> StartNode(index)
-                NodeType.NORTH_WEST -> NorthWestNode(index)
-                NodeType.NORTH_EAST -> NorthEastNode(index)
-                NodeType.SOUTH_WEST -> SouthWestNode(index)
-                NodeType.SOUTH_EAST -> SouthEastNode(index)
-                NodeType.HORIZONTAL -> HorizontalNode(index)
-                NodeType.VERTICAL -> VerticalNode(index)
-                NodeType.GROUND -> GroundNode(index)
+                NodeType.NORTH_WEST -> NorthWestNode(index, colour)
+                NodeType.NORTH_EAST -> NorthEastNode(index, colour)
+                NodeType.SOUTH_WEST -> SouthWestNode(index, colour)
+                NodeType.SOUTH_EAST -> SouthEastNode(index, colour)
+                NodeType.HORIZONTAL -> HorizontalNode(index, colour)
+                NodeType.VERTICAL -> VerticalNode(index, colour)
+                NodeType.GROUND -> GroundNode(index, colour)
+                NodeType.BORDER -> BorderNode(index)
             }
 
             return foundNode

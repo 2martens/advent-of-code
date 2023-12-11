@@ -3,7 +3,8 @@ package de.twomartens.adventofcode.day10.node
 import kotlin.math.abs
 
 data class StartNode(override val index: Pair<Int, Int>,
-                     override var colour: NodeColour = NodeColour.LOOP) : Node {
+                     override var colour: NodeColour = NodeColour.LOOP,
+                     override val nodeType: NodeType = NodeType.START_NODE) : Node {
     override fun isConnectedTo(otherNode: Node): Boolean {
         return isHorizontal(otherNode) || isVertical(otherNode)
     }
