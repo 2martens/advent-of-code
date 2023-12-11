@@ -9,12 +9,12 @@ import java.util.stream.Stream
 class GraphWalkerTest {
     @ParameterizedTest
     @MethodSource(value = ["getGraphs"])
-    fun shouldFindFarthestDistance(graph: Graph, distance: Int) {
+    fun shouldFindFurthestDistance(graph: Graph, distance: Int) {
         val walker = GraphWalker()
 
-        val farthestDistance = walker.findFurthestDistance(graph)
+        val furthestDistance = walker.findFurthestDistance(graph)
 
-        Assertions.assertThat(farthestDistance).isEqualTo(distance)
+        Assertions.assertThat(furthestDistance).isEqualTo(distance)
     }
 
     @ParameterizedTest
