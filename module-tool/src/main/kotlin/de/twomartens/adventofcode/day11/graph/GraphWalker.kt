@@ -1,6 +1,5 @@
 package de.twomartens.adventofcode.day11.graph
 
-import de.twomartens.adventofcode.day11.node.GalaxyNode
 import kotlin.math.abs
 
 class GraphWalker {
