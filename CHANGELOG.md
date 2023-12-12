@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/2martens/advent-of-code/compare/v0.1.0...v0.2.0) (2023-12-12)
+
+
+### Added
+
+* Add day 10 ([#6](https://github.com/2martens/advent-of-code/issues/6)) ([034e535](https://github.com/2martens/advent-of-code/commit/034e5359f99f6cd021ce3c424ba6d4ce42127b53))
+* Add Day 11 ([#7](https://github.com/2martens/advent-of-code/issues/7)) ([2b518ff](https://github.com/2martens/advent-of-code/commit/2b518ffa5868c9dcb8446cb84bf9a623add8f2f0))
+* Add usage information to README ([12df64f](https://github.com/2martens/advent-of-code/commit/12df64fc5503275ae7922254c98ee6e1d06c3175))
+
+
+### Changed
+
+* Enable bootJar ([12df64f](https://github.com/2martens/advent-of-code/commit/12df64fc5503275ae7922254c98ee6e1d06c3175))
+
 ## 0.1.0 (2023-12-09)
 
 
