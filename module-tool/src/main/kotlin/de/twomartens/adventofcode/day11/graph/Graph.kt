@@ -1,9 +1,5 @@
 package de.twomartens.adventofcode.day11.graph
 
-import de.twomartens.adventofcode.day11.node.GalaxyNode
-import de.twomartens.adventofcode.day11.node.Node
-import de.twomartens.adventofcode.day11.node.NodeType
-
 
 data class Graph(val name: String, val galaxies: Collection<Pair<Int, Int>>) {
 
@@ -17,35 +13,28 @@ data class Graph(val name: String, val galaxies: Collection<Pair<Int, Int>>) {
                 throw IllegalArgumentException("Empty space cannot be deleted")
             }
 
-            val colIndicesWithGalaxy = mutableListOf<Int>()
-            val nodeRows = rows.map {
-                it.split("")
-            }.mapIndexed { indexRow, row ->
-                row.filterNot { it.isBlank() }.mapIndexed { indexCol, col ->
-                    val nodeType = NodeType.of(col)
-                    val index = Pair(indexRow, indexCol)
-                    if (nodeType == NodeType.GALAXY) {
-                        colIndicesWithGalaxy.add(indexCol)
-                    }
-                    Node.of(nodeType, index)
-                }
-            }
-
-            val colIndicesWithoutGalaxy = mutableListOf<Int>()
-            for (i in nodeRows.first().indices) {
-                if (i !in colIndicesWithGalaxy) {
-                    colIndicesWithoutGalaxy.add(i)
-                }
-            }
-
+            val galaxies = mutableListOf<Pair<Int, Int>>()
+            val colIndices = mutableMapOf<Int, Boolean>()
             val rowIndicesWithoutGalaxies = mutableListOf<Int>()
-            nodeRows.forEachIndexed { index, row ->
-                if (row.none { it.nodeType == NodeType.GALAXY }) {
-                    rowIndicesWithoutGalaxies.add(index)
+            rows.map { it.split("") }.forEachIndexed { indexRow, row ->
+                var rowContainsGalaxy = false
+                row.filterNot { it.isBlank() }.forEachIndexed { indexCol, col ->
+                    colIndices.putIfAbsent(indexCol, false)
+
+                    val index = Pair(indexRow, indexCol)
+                    if (col == "#") {
+                        galaxies.add(index)
+                        rowContainsGalaxy = true
+                        colIndices[indexCol] = true
+                    }
+                }
+                if (!rowContainsGalaxy) {
+                    rowIndicesWithoutGalaxies.add(indexRow)
                 }
             }
-            val galaxies = nodeRows.flatten().filter { it.nodeType == NodeType.GALAXY }
-                    .map { it.index }
+            val colIndicesWithoutGalaxy = colIndices.entries
+                    .filterNot { it.value }
+                    .map { it.key }
 
             val updatedGalaxies = updateIndices(galaxies,
                     colIndicesWithoutGalaxy, rowIndicesWithoutGalaxies,

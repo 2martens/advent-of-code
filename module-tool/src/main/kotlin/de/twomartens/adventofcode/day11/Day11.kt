@@ -5,6 +5,7 @@ import de.twomartens.adventofcode.day11.graph.GraphWalker
 import mu.KotlinLogging
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
+import org.springframework.shell.standard.ShellOption
 import java.nio.file.Files
 import kotlin.io.path.toPath
 
@@ -19,9 +20,9 @@ class Day11 {
     }
 
     @ShellMethod(key = ["day-11-part-2"])
-    fun day11Part2(): String {
+    fun day11Part2(@ShellOption(defaultValue = "1000000") factor: Int = 1_000_000): String {
         val lines = readLines()
-        val graph = Graph.of("day11", lines, 1_000_000)
+        val graph = Graph.of("day11", lines, factor)
         val walker = GraphWalker()
         return walker.sumAllDistancesBetweenGalaxies(graph).toString()
     }

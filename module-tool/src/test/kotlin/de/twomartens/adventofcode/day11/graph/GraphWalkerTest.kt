@@ -1,6 +1,5 @@
 package de.twomartens.adventofcode.day11.graph
 
-import de.twomartens.adventofcode.day11.node.GalaxyNode
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
