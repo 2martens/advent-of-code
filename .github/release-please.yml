@@ -1,23 +1,5 @@
 handleGHRelease: true
-releaseType: simple
-bumpMinorPreMajor: true
-bumpPatchForMinorPreMajor: true
-changelogSections:
-  - type: "feat",
-    section: "Added",
-    hidden: false
-  - type: "change",
-    section: "Changed",
-    hidden: false
-  - type: "deprecate",
-    section: "Deprecated",
-    hidden: false
-  - type: "fix",
-    section: "Fixed",
-    hidden: false
-  - type: "remove",
-    section: "Removed",
-    hidden: false
-  - type: "security",
-    section: "Security",
-    hidden: false
+primaryBranch: main
+manifest: true
+manifestConfig: release-please-config.json
+manifestFile: .release-please-manifest.json
