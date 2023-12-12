@@ -62,11 +62,11 @@ springBoot {
 }
 
 tasks.bootJar {
-    enabled = false
+    enabled = true
 }
 
 tasks.jar {
-    enabled = true
+    enabled = false
     archiveClassifier.set("")
 }
 

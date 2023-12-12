@@ -44,6 +44,10 @@ configurations {
     }
 }
 
+application {
+    mainClass = "de.twomartens.adventofcode.MainApplicationKt"
+}
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
@@ -56,6 +60,7 @@ val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:
 tasks.jar {
     doFirst {
         manifest {
+            attributes["Main-Class"] = "de.twomartens.adventofcode.MainApplicationKt"
             attributes["Implementation-Title"] = rootProject.name
             attributes["Implementation-Version"] = archiveVersion.get()
             attributes["Implementation-Vendor"] = "Jim Martens"
