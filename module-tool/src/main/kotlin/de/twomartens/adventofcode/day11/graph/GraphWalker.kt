@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import kotlin.math.abs
 
 class GraphWalker {
-    fun sumAllDistancesBetweenGalaxies(graph: Graph): Int {
+    fun sumAllDistancesBetweenGalaxies(graph: Graph): Long {
         val galaxyPairs: MutableCollection<GalaxyPair> = mutableSetOf()
 
         for (galaxy1 in graph.galaxies) {
@@ -26,8 +26,8 @@ class GraphWalker {
                 }
     }
 
-    fun findDistanceBetweenGalaxies(galaxy1: Pair<Int, Int>, galaxy2: Pair<Int, Int>): Int {
-        return abs(galaxy1.first - galaxy2.first) +
+    fun findDistanceBetweenGalaxies(galaxy1: Pair<Int, Int>, galaxy2: Pair<Int, Int>): Long {
+        return abs(galaxy1.first - galaxy2.first).toLong() +
                 abs(galaxy1.second - galaxy2.second)
     }
 
