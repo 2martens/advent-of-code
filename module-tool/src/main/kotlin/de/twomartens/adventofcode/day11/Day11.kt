@@ -20,15 +20,16 @@ class Day11 {
     }
 
     @ShellMethod(key = ["day-11-part-2"])
-    fun day11Part2(@ShellOption(defaultValue = "1000000") factor: Int = 1_000_000): String {
-        val lines = readLines()
+    fun day11Part2(@ShellOption(defaultValue = "1000000") factor: Int = 1_000_000,
+                   @ShellOption(defaultValue = "day-11.txt") filename: String = "day-11.txt"): String {
+        val lines = readLines(filename)
         val graph = Graph.of("day11", lines, factor)
         val walker = GraphWalker()
         return walker.sumAllDistancesBetweenGalaxies(graph).toString()
     }
 
-    private fun readLines(): List<String> {
-        val url = Day11::class.java.classLoader.getResource("input/day-11.txt")
+    private fun readLines(filename: String = "day-11.txt"): List<String> {
+        val url = Day11::class.java.classLoader.getResource("input/$filename")
         if (url === null) {
             return listOf()
         }
