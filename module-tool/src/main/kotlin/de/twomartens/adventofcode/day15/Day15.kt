@@ -33,7 +33,7 @@ class Day15 {
             return listOf()
         }
 
-        return Files.readAllLines(url.toURI().toPath()).get(0).split(',')
+        return Files.readAllLines(url.toURI().toPath())[0].split(',')
     }
 
     companion object {
