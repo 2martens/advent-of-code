@@ -25,7 +25,7 @@ class GraphWalker {
 
         // add all start positions from bottom
         for (columnIndex in lastRow.indices) {
-            val startPosition = ActiveNode(lastRowIndex, columnIndex, Direction.DOWN)
+            val startPosition = ActiveNode(lastRowIndex, columnIndex, Direction.UP)
             resultGraphs.add(energizeGraph(graph, startPosition))
         }
 
@@ -35,7 +35,7 @@ class GraphWalker {
             resultGraphs.add(energizeGraph(graph, startPositionLeft))
 
             // add all start positions from right
-            val startPositionRight = ActiveNode(rowIndex, lastColumnIndex, Direction.RIGHT)
+            val startPositionRight = ActiveNode(rowIndex, lastColumnIndex, Direction.LEFT)
             resultGraphs.add(energizeGraph(graph, startPositionRight))
         }
 
