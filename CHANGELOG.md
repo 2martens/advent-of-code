@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/2martens/advent-of-code/compare/v0.2.0...v0.3.0) (2023-12-16)
+
+
+### Added
+
+* Add day 16 ([#11](https://github.com/2martens/advent-of-code/issues/11)) ([333e628](https://github.com/2martens/advent-of-code/commit/333e6282a2b844fd99f4569c49301a69867a0a2c))
+* Add day 15 ([017e79e](https://github.com/2martens/advent-of-code/commit/017e79eedacfea138d1118221c341b818ef7b339))
+
 ## [0.2.0](https://github.com/2martens/advent-of-code/compare/v0.1.0...v0.2.0) (2023-12-12)
 
 
