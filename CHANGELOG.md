@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/2martens/advent-of-code/compare/v0.3.0...v0.3.1) (2023-12-16)
+
+
+### Fixed
+
+* Use correct direction for starting positions ([436aaad](https://github.com/2martens/advent-of-code/commit/436aaad85e4a63f64ad83277e9b00e31030d4d42))
+
 ## [0.3.0](https://github.com/2martens/advent-of-code/compare/v0.2.0...v0.3.0) (2023-12-16)
 
 
