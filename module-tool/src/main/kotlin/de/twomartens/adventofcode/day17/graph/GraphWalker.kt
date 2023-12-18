@@ -2,7 +2,6 @@ package de.twomartens.adventofcode.day17.graph
 
 import mu.KotlinLogging
 import java.util.*
-import kotlin.collections.HashMap
 
 data class VisitedNode(val row: Int, val column: Int, var direction: Direction?, var directionCount: Int = 0)
 data class PathNode(val visitedNode: VisitedNode, val distanceToStart: Int) : Comparable<PathNode> {
@@ -13,7 +12,7 @@ data class PathNode(val visitedNode: VisitedNode, val distanceToStart: Int) : Co
 
 class GraphWalker {
 
-    fun findMinimalHeatLoss(graph: Graph): Int {
+    fun findMinimalHeatLoss(graph: Graph, minPerDirection: Int, maxPerDirection: Int): Int {
         log.debug { "Find minimal heat loss" }
         val lastColumnIndex = graph.rows[0].lastIndex
         val lastRowIndex = graph.rows.lastIndex
@@ -26,19 +25,22 @@ class GraphWalker {
 
         while (queue.isNotEmpty()) {
             lastNode = queue.poll()
-            if (lastNode.visitedNode.row == lastRowIndex && lastNode.visitedNode.column == lastColumnIndex) {
+            if (lastNode.visitedNode.row == lastRowIndex
+                    && lastNode.visitedNode.column == lastColumnIndex
+                    && lastNode.visitedNode.directionCount >= minPerDirection
+                    && lastNode.visitedNode.directionCount <= maxPerDirection) {
                 break
             }
 
             log.debug { "Currently at tile $lastNode with heat loss ${lastNode.distanceToStart}" }
 
-            val neighbours = findNeighbours(lastNode)
+            val neighbours = findNeighbours(lastNode, minPerDirection)
             val validNeighbours = neighbours
                     .filter {
                         isWithinRowBounds(it, graph) && isWithinColumnBounds(it, graph)
                     }
                     .filter { !visitedNodes.containsKey(it) }
-                    .filter { it.directionCount <= 3 }
+                    .filter { it.directionCount <= maxPerDirection }
 
             for (neighbour in validNeighbours) {
                 val neighbourTile = graph.rows[neighbour.row][neighbour.column]
@@ -52,30 +54,33 @@ class GraphWalker {
         return lastNode?.distanceToStart ?: 0
     }
 
-    fun findNeighbours(currentNode: PathNode): List<VisitedNode> {
+    fun findNeighbours(currentNode: PathNode, minPerDirection: Int): List<VisitedNode> {
         val direction = currentNode.visitedNode.direction
         val visitedNode = currentNode.visitedNode
+        val sameDirectionCount = currentNode.visitedNode.directionCount
+        val belowMinDirectionCount = sameDirectionCount < minPerDirection
+        val leftNeighbour = findNeighbour(visitedNode, Direction.LEFT)
+        val rightNeighbour = findNeighbour(visitedNode, Direction.RIGHT)
+        val downNeighbour = findNeighbour(visitedNode, Direction.DOWN)
+        val upNeighbour = findNeighbour(visitedNode, Direction.UP)
+
         return when (direction) {
-            Direction.LEFT -> listOf(findNeighbour(visitedNode, Direction.DOWN),
-                    findNeighbour(visitedNode, Direction.LEFT),
-                    findNeighbour(visitedNode, Direction.RIGHT))
+            Direction.LEFT -> if (belowMinDirectionCount) listOf(leftNeighbour) else listOf(
+                    downNeighbour, leftNeighbour, rightNeighbour)
 
-            Direction.UP -> listOf(findNeighbour(visitedNode, Direction.LEFT),
-                    findNeighbour(visitedNode, Direction.UP),
-                    findNeighbour(visitedNode, Direction.RIGHT))
+            Direction.UP -> if (belowMinDirectionCount) listOf(upNeighbour) else listOf(
+                    leftNeighbour, upNeighbour, rightNeighbour)
 
-            Direction.RIGHT -> listOf(findNeighbour(visitedNode, Direction.UP),
-                    findNeighbour(visitedNode, Direction.RIGHT),
-                    findNeighbour(visitedNode, Direction.DOWN))
+            Direction.RIGHT -> if (belowMinDirectionCount) listOf(rightNeighbour) else listOf(
+                    upNeighbour, rightNeighbour, downNeighbour)
 
-            Direction.DOWN -> listOf(findNeighbour(visitedNode, Direction.RIGHT),
-                    findNeighbour(visitedNode, Direction.DOWN),
-                    findNeighbour(visitedNode, Direction.LEFT))
+            Direction.DOWN -> if (belowMinDirectionCount) listOf(downNeighbour) else listOf(
+                    rightNeighbour, downNeighbour, leftNeighbour)
 
-            null -> listOf(findNeighbour(visitedNode, Direction.RIGHT),
-                    findNeighbour(visitedNode, Direction.DOWN),
-                    findNeighbour(visitedNode, Direction.LEFT),
-                    findNeighbour(visitedNode, Direction.UP))
+            null -> listOf(rightNeighbour,
+                    downNeighbour,
+                    leftNeighbour,
+                    upNeighbour)
         }
     }
 
