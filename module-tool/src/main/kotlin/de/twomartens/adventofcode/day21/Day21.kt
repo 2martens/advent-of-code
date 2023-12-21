@@ -28,6 +28,9 @@ class Day21 {
         val stopWatch = StopWatch()
         stopWatch.start()
         val lines = readInput()
+        val graph = Graph.of(lines)
+        val walker = GraphWalker()
+        val reachableNOdes = walker.findNumberOfReachableNodes(graph, 26501365)
         return ", took ${stopWatch.totalTimeSeconds} seconds"
     }
 

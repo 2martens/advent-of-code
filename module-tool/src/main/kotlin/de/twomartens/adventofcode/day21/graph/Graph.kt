@@ -10,7 +10,7 @@ class Graph(val rows: List<List<Boolean>>, val startPosition: Index) {
                 val fields = line.split("").filterNot { it.isBlank() }
                 val tiles = fields.mapIndexed { columnIndex, it ->
                     if (it == "S") {
-                        startPosition = Index(rowIndex, columnIndex)
+                        startPosition = Index(rowIndex.toLong(), columnIndex.toLong())
                     }
                     it == "." || it == "S"
                 }
