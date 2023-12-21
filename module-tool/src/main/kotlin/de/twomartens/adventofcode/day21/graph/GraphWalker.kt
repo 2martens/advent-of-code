@@ -20,10 +20,10 @@ class GraphWalker {
             if (nextNumberOfSteps <= numberOfSteps) {
                 val allowedNeighbours = neighbours
                         .asSequence()
-                        .map { Pair(it, modifyIndexToBeInBounds(it, graph)) }
-                        .filter { graph.rows[it.second.row.toInt()][it.second.column.toInt()] }
-                        .filterNot { reachedNodes.containsKey(it.first) && reachedNodes[it.first] == nextNumberOfSteps }
-                        .map { Pair(it.first, nextNumberOfSteps) }
+                        .map { modifyIndexToBeInBounds(it, graph) }
+                        .filter { graph.rows[it.row][it.column] }
+                        .filterNot { reachedNodes.containsKey(it) && reachedNodes[it] == nextNumberOfSteps }
+                        .map { Pair(it, nextNumberOfSteps) }
                         .filterNot { queue.contains(it) }
                         .toList()
 
@@ -36,25 +36,32 @@ class GraphWalker {
 
     private fun modifyIndexToBeInBounds(index: Index, graph: Graph): Index {
         var row = index.row
+        var overflowVertical = index.overflowVertical
 
-        while (row < 0) {
+        if (row < 0) {
             row += graph.rows.size
+            overflowVertical -= 1
         }
-        while (row >= graph.rows.size) {
+
+        if (row >= graph.rows.size) {
             row -= graph.rows.size
+            overflowVertical += 1
         }
 
         var column = index.column
         val numberOfColumns = graph.rows[0].size
+        var overflowHorizontal = index.overflowHorizontal
 
-        while (column < 0) {
+        if (column < 0) {
             column += numberOfColumns
+            overflowHorizontal -= 1
         }
-        while (column >= numberOfColumns) {
+        if (column >= numberOfColumns) {
             column -= numberOfColumns
+            overflowHorizontal += 1
         }
 
-        return Index(row, column)
+        return Index(row, column, overflowVertical, overflowHorizontal)
     }
 
 
@@ -103,10 +110,17 @@ class GraphWalker {
     fun findNeighbour(currentIndex: Index, direction: Direction): Index {
 
         return when (direction) {
-            Direction.LEFT -> Index(currentIndex.row, currentIndex.column - 1)
-            Direction.UP -> Index(currentIndex.row - 1, currentIndex.column)
-            Direction.RIGHT -> Index(currentIndex.row, currentIndex.column + 1)
-            Direction.DOWN -> Index(currentIndex.row + 1, currentIndex.column)
+            Direction.LEFT -> Index(currentIndex.row, currentIndex.column - 1,
+                    currentIndex.overflowVertical, currentIndex.overflowHorizontal)
+
+            Direction.UP -> Index(currentIndex.row - 1, currentIndex.column,
+                    currentIndex.overflowVertical, currentIndex.overflowHorizontal)
+
+            Direction.RIGHT -> Index(currentIndex.row, currentIndex.column + 1,
+                    currentIndex.overflowVertical, currentIndex.overflowHorizontal)
+
+            Direction.DOWN -> Index(currentIndex.row + 1, currentIndex.column,
+                    currentIndex.overflowVertical, currentIndex.overflowHorizontal)
         }
     }
 
