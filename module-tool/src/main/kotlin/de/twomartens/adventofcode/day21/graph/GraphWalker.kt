@@ -9,6 +9,7 @@ class GraphWalker {
 
         val queue: Queue<Pair<Index, Long>> = PriorityQueue(Comparator.comparing { it.second })
         val reachedNodes: MutableMap<Index, Long> = mutableMapOf()
+        val reachableNodes: MutableMap<Pair<Index, Long>, Boolean> = mutableMapOf()
         queue.add(Pair(graph.startPosition, 0))
 
         while (queue.isNotEmpty()) {
@@ -18,16 +19,21 @@ class GraphWalker {
             val neighbours = findNeighbours(currentIndex.first)
             val nextNumberOfSteps = currentIndex.second + 1
             if (nextNumberOfSteps <= numberOfSteps) {
-                val allowedNeighbours = neighbours
-                        .asSequence()
-                        .map { modifyIndexToBeInBounds(it, graph) }
-                        .filter { graph.rows[it.row][it.column] }
-                        .filterNot { reachedNodes.containsKey(it) && reachedNodes[it] == nextNumberOfSteps }
-                        .map { Pair(it, nextNumberOfSteps) }
-                        .filterNot { queue.contains(it) }
-                        .toList()
-
-                queue.addAll(allowedNeighbours)
+                for (neighbour in neighbours) {
+                    val modifiedIndex = modifyIndexToBeInBounds(neighbour, graph)
+                    if (!graph.rows[modifiedIndex.row][modifiedIndex.column]) {
+                        continue
+                    }
+                    if (reachedNodes.containsKey(modifiedIndex) && reachedNodes[modifiedIndex] == nextNumberOfSteps) {
+                        continue
+                    }
+                    val enteredPair = Pair(modifiedIndex, nextNumberOfSteps)
+                    if (reachableNodes.containsKey(enteredPair)) {
+                        continue
+                    }
+                    reachableNodes[enteredPair] = true
+                    queue.add(enteredPair)
+                }
             }
         }
 
